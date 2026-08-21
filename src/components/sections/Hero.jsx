@@ -14,6 +14,19 @@ const slides = [
 export default function Hero() {
   const [active, setActive] = useState(0)
   useEffect(() => { const sync=event=>setActive(event.detail);window.addEventListener('digitsol-journey-active',sync);return()=>window.removeEventListener('digitsol-journey-active',sync) },[])
+  useEffect(() => {
+    const hero = document.querySelector('.hero')
+    let timer
+    const stop = () => { clearInterval(timer); timer = 0 }
+    const start = () => {
+      if (timer) return
+      timer = setInterval(() => setActive(current => (current + 1) % slides.length), 4500)
+    }
+    const observer = new IntersectionObserver(([entry]) => entry.isIntersecting ? start() : stop(), { threshold:.25 })
+    if (hero) observer.observe(hero)
+    return () => { stop(); observer.disconnect() }
+  }, [])
+  useEffect(() => { window.dispatchEvent(new CustomEvent('digitsol-hero-active', { detail:active })) }, [active])
   const [headline, accent, description] = slides[active]
   return <section className="hero" id="top"><div className="container hero-grid"><div className="hero-copy reveal"><p className="eyebrow">DUBAI · 360° DIGITAL AGENCY</p><div className="hero-slide" key={active}><h1>{headline} <em>{accent}</em></h1><p>{description}</p></div><div className="hero-actions"><a className="explore-cube-button" href="#work" aria-label="Explore Our Works"><span className="explore-canvas" aria-hidden="true"><ExploreButton3D active={active} /></span></a></div></div><div className="scene-wrap hero-service-anchor" aria-hidden="true" /></div><div className="container scroll-cue"><span>SCROLL TO DISCOVER</span><ArrowDownRight /></div></section>
 }
