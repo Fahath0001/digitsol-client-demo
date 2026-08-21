@@ -1,0 +1,2 @@
+import { ArrowUpRight } from 'lucide-react'
+export default function FinalCTA(){return <section className="final-cta reveal"><div className="container"><div className="cta-inner"><span className="cta-shape one"/><span className="cta-shape two"/><span className="cta-shape three"/><p className="eyebrow">YOUR NEXT MOVE</p><h2>Ready to build what’s next?</h2><p>Let’s create digital experiences that drive real growth.</p><a className="button button-dark" href="mailto:hi@digitsol.ae">Let’s Talk <ArrowUpRight/></a></div></div></section>}

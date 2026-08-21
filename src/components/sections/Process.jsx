@@ -1,0 +1,3 @@
+import SectionHeading from '../ui/SectionHeading.jsx'
+const steps = [['01','Discover','We listen, investigate and find the real opportunity.'],['02','Define','We align the idea, audience and measures of success.'],['03','Create','We design, build and refine every essential detail.'],['04','Accelerate','We launch, learn and compound what performs.']]
+export default function Process() { return <section className="section process"><div className="container"><SectionHeading eyebrow="HOW WE WORK" title="From strategy to momentum." /><div className="process-track"><div className="process-line" />{steps.map((s,i)=><article key={s[0]} className="process-step"><span className={`dot dot-${i}`} /><p>{s[0]}</p><h3>{s[1]}</h3><div>{s[2]}</div></article>)}</div></div></section> }

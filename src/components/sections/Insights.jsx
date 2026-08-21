@@ -1,0 +1,4 @@
+import { ArrowRight } from 'lucide-react'
+import { articles } from '../../data/siteData.js'
+import SectionHeading from '../ui/SectionHeading.jsx'
+export default function Insights(){return <section className="section insights" id="insights"><div className="container"><div className="heading-row"><SectionHeading eyebrow="LATEST THINKING" title="Ideas for a faster-moving digital world."/><a className="text-link" href="#insights">View All Insights <ArrowRight/></a></div><div className="insight-grid">{articles.map(a=><article className="insight-card reveal-card" key={a.title}><div className={`insight-art ${a.theme}`} aria-hidden="true"><span/><i/><b/></div><div className="insight-meta"><span>{a.category}</span><span>{a.date} · {a.time} READ</span></div><h3>{a.title}</h3><a href="#audit" aria-label={`Read ${a.title}`}>Read article <ArrowRight/></a></article>)}</div></div></section>}
