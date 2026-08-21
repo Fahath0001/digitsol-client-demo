@@ -4,7 +4,7 @@ import { Suspense, useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
 import { useReducedMotion } from '../../hooks/useReducedMotion.js'
 
-const modelUrl = '/models/digitsol-glass-city-hero.glb'
+const modelUrl = `${import.meta.env.BASE_URL}models/digitsol-glass-city-hero.glb`
 
 function AccentCube({ position, color, size = .18, speed = 1.3 }) {
   return <Float speed={speed} rotationIntensity={.22} floatIntensity={.38}><RoundedBox position={position} args={[size, size, size]} radius={.025} smoothness={2} castShadow><meshPhysicalMaterial color={color} roughness={.22} metalness={.05} /></RoundedBox></Float>
