@@ -12,13 +12,39 @@ export default function SharedServiceJourney() {
   const atEndpoint = useRef(true)
   const journeyProgress = useRef(0)
   const [active, setActive] = useState(0)
-
-  useEffect(() => { window.dispatchEvent(new CustomEvent('digitsol-journey-active', { detail:active })) }, [active])
+  const sequence = useRef()
+  const sequenceStarted = useRef(false)
 
   useEffect(() => {
-    const choose = setInterval(() => setActive(current => atEndpoint.current && journeyProgress.current <= .02 ? (current + 1) % services.length : current), 5000)
-    return () => clearInterval(choose)
+    window.dispatchEvent(new CustomEvent('digitsol-journey-active', { detail:active }))
+    window.dispatchEvent(new CustomEvent('digitsol-services-active', { detail:sequenceStarted.current ? active : null }))
+  }, [active])
+
+  useEffect(() => {
+    const syncHeroModel = event => {
+      if (!sequenceStarted.current) setActive(event.detail)
+    }
+    window.addEventListener('digitsol-hero-active', syncHeroModel)
+    return () => window.removeEventListener('digitsol-hero-active', syncHeroModel)
   }, [])
+
+  const stopSequence = () => {
+    clearInterval(sequence.current)
+    sequence.current = 0
+  }
+
+  const startSequence = () => {
+    if (sequenceStarted.current) return
+    sequenceStarted.current = true
+    setActive(0)
+    window.dispatchEvent(new CustomEvent('digitsol-journey-active', { detail:0 }))
+    window.dispatchEvent(new CustomEvent('digitsol-services-active', { detail:0 }))
+    let index = 0
+    sequence.current = setInterval(() => {
+      index = (index + 1) % services.length
+      setActive(index)
+    }, 1800)
+  }
 
   useEffect(() => {
     let moveX
@@ -29,6 +55,7 @@ export default function SharedServiceJourney() {
     let settle
     let lastScroll = window.scrollY
     let initialized = false
+    let destinationObserver
     const update = () => {
       frame.current = 0
       const source = document.querySelector('.hero-service-anchor')?.getBoundingClientRect()
@@ -39,7 +66,8 @@ export default function SharedServiceJourney() {
       const end = window.innerHeight * .3
       const progress = Math.min(Math.max((start - section.top) / (start - end), 0), 1)
       journeyProgress.current = progress
-      atEndpoint.current = progress <= .02 || progress >= .98
+      atEndpoint.current = progress <= .02 || progress >= .9
+
       const x = mix(source.left, destination.left, progress)
       const y = mix(source.top, destination.top, progress)
       const width = mix(source.width, destination.width, progress)
@@ -62,9 +90,21 @@ export default function SharedServiceJourney() {
     }
     const schedule = () => { if (!frame.current) frame.current = requestAnimationFrame(update) }
     update()
+    const destinationNode = document.querySelector('.service-drop-zone')
+    if (destinationNode) {
+      destinationObserver = new IntersectionObserver(([entry]) => {
+        if (entry.isIntersecting) startSequence()
+        else {
+          stopSequence()
+          sequenceStarted.current = false
+          window.dispatchEvent(new CustomEvent('digitsol-services-active', { detail:null }))
+        }
+      }, { threshold:.2 })
+      destinationObserver.observe(destinationNode)
+    }
     window.addEventListener('scroll', schedule, { passive:true })
     window.addEventListener('resize', schedule)
-    return () => { if (frame.current) cancelAnimationFrame(frame.current);clearTimeout(settle);gsap.killTweensOf(element.current);window.removeEventListener('scroll', schedule);window.removeEventListener('resize', schedule) }
+    return () => { if (frame.current) cancelAnimationFrame(frame.current);clearTimeout(settle);destinationObserver?.disconnect();stopSequence();gsap.killTweensOf(element.current);window.dispatchEvent(new CustomEvent('digitsol-services-active', { detail:null }));window.removeEventListener('scroll', schedule);window.removeEventListener('resize', schedule) }
   }, [])
 
   const item = services[active]
