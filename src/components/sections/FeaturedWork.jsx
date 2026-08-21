@@ -4,9 +4,9 @@ import { projects } from '../../data/siteData.js'
 import SectionHeading from '../ui/SectionHeading.jsx'
 
 const projectVideos = [
-  '/videos/fintech-banking-5sec.mp4',
-  '/videos/luxury-hospitality-5sec.mp4',
-  '/videos/luxury-product-5sec.mp4',
+  `${import.meta.env.BASE_URL}videos/fintech-banking-5sec.mp4`,
+  `${import.meta.env.BASE_URL}videos/luxury-hospitality-5sec.mp4`,
+  `${import.meta.env.BASE_URL}videos/luxury-product-5sec.mp4`,
 ]
 
 function ProjectCard({ project, index }) {
